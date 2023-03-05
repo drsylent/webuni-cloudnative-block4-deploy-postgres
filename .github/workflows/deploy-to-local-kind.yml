@@ -5,12 +5,21 @@ on:
   workflow_dispatch: 
 
 jobs:
-  deploy:
-    runs-on: self-hosted
+  deploy-windows:
+    runs-on: [self-hosted, windows]
     steps:
       - uses: actions/checkout@v3
       - name: Helm deployment
         env:
           POSTGRESQL_PASSWORD: ${{ secrets.POSTGRESQL_PASSWORD }}
         run: |
-          helm upgrade postgresql bitnami/postgresql --version 12.1.9 -n webuni --set auth.password=$POSTGRESQL_PASSWORD -f values.yaml --install
+          helm upgrade postgresql bitnami/postgresql --version 12.1.9 -n webuni --set auth.password="$env:POSTGRESQL_PASSWORD" -f values.yaml --install
+  deploy-linux:
+    runs-on: [self-hosted, linux]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Helm deployment
+        env:
+          POSTGRESQL_PASSWORD: ${{ secrets.POSTGRESQL_PASSWORD }}
+        run: |
+          helm upgrade postgresql bitnami/postgresql --version 12.1.9 -n webuni --set auth.password="$POSTGRESQL_PASSWORD" -f values.yaml --install
